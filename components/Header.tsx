@@ -1,183 +1,167 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { JSX } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import ButtonSignin from "./ButtonSignin";
-import logo from "@/app/icon.png";
-import config from "@/config";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  BarChart2,
+  TrendingUp,
+  LineChart,
+  HelpCircle,
+  FileText,
+  BookOpen,
+  Bell,
+  Settings,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { createClient } from "@/libs/supabase/client";
+import MobileNav from "./MobileNav";
 
-const links: {
-  href: string;
-  label: string;
-}[] = [
+export const features = [
   {
-    href: "/#pricing",
-    label: "Pricing",
+    name: "Props",
+    href: "/props",
+    icon: BarChart2,
+    sports: ["NFL", "NBA", "MLB", "NHL"],
   },
   {
-    href: "/#testimonials",
-    label: "Reviews",
+    name: "Trends",
+    href: "/trends",
+    icon: TrendingUp,
+    sports: ["NFL", "NBA", "MLB", "NHL"],
   },
   {
-    href: "/#faq",
-    label: "FAQ",
+    name: "Projections",
+    href: "/projections",
+    icon: LineChart,
+    sports: ["NFL", "NBA", "MLB", "NHL"],
   },
 ];
 
-const cta: JSX.Element = <ButtonSignin extraStyle="btn-primary" />;
+export const resources = [
+  { name: "Documentation", href: "/docs", icon: FileText },
+  { name: "Help Center", href: "/help", icon: HelpCircle },
+  { name: "Blog", href: "/blog", icon: BookOpen },
+  { name: "Notifications", href: "/notifications", icon: Bell },
+  { name: "Settings", href: "/settings", icon: Settings },
+];
 
-// A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
-// The header is responsive, and on mobile, the links are hidden behind a burger button.
-const Header = () => {
-  const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export default function Header() {
+  const [session, setSession] = useState(null);
+  const router = useRouter();
+  const supabase = createClient();
 
-  // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {
-    setIsOpen(false);
-  }, [searchParams]);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
-    <header className="bg-base-200">
-      <nav
-        className="container flex items-center justify-between px-8 py-4 mx-auto"
-        aria-label="Global"
-      >
-        {/* Your logo/name on large screens */}
-        <div className="flex lg:flex-1">
-          <Link
-            className="flex items-center gap-2 shrink-0 "
-            href="/"
-            title={`${config.appName} homepage`}
-          >
-            <Image
-              src={logo}
-              alt={`${config.appName} logo`}
-              className="w-8"
-              placeholder="blur"
-              priority={true}
-              width={32}
-              height={32}
-            />
-            <span className="font-extrabold text-lg">{config.appName}</span>
-          </Link>
-        </div>
-        {/* Burger button to open menu on mobile */}
-        <div className="flex lg:hidden">
-          <button
-            type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
-            onClick={() => setIsOpen(true)}
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 text-base-content"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            </svg>
-          </button>
-        </div>
+    <header className="border-b bg-background">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center space-x-2">
+          <span className="text-xl font-bold">SportsBet</span>
+        </Link>
 
-        {/* Your links on large screens */}
-        <div className="hidden lg:flex lg:justify-center lg:gap-12 lg:items-center">
-          {links.map((link) => (
-            <Link
-              href={link.href}
-              key={link.href}
-              className="link link-hover"
-              title={link.label}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+        <NavigationMenu className="hidden md:flex relative">
+          <NavigationMenuList>
+            {features.map((feature) => (
+              <NavigationMenuItem key={feature.name} className="relative">
+                <NavigationMenuTrigger className="h-9">
+                  <feature.icon className="mr-2 h-4 w-4" />
+                  {feature.name}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[200px] gap-1 p-4">
+                    {feature.sports.map((sport) => (
+                      <li key={sport}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={`${
+                              feature.href
+                            }/${sport.toLowerCase()}/compare`}
+                            className="flex items-center space-x-2 rounded-md p-2 hover:bg-accent"
+                          >
+                            <span>{sport}</span>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            ))}
 
-        {/* CTA on large screens */}
-        <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div>
-      </nav>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="h-9">
+                Resources
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[200px] gap-1 p-4">
+                  {resources.map((resource) => (
+                    <li key={resource.name}>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href={resource.href}
+                          className="flex items-center space-x-2 rounded-md p-2 hover:bg-accent"
+                        >
+                          <resource.icon className="h-4 w-4" />
+                          <span>{resource.name}</span>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
 
-      {/* Mobile menu, show/hide based on menu state. */}
-      <div className={`relative z-50 ${isOpen ? "" : "hidden"}`}>
-        <div
-          className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-base-200 sm:max-w-sm sm:ring-1 sm:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
-        >
-          {/* Your logo/name on small screens */}
-          <div className="flex items-center justify-between">
-            <Link
-              className="flex items-center gap-2 shrink-0 "
-              title={`${config.appName} homepage`}
-              href="/"
-            >
-              <Image
-                src={logo}
-                alt={`${config.appName} logo`}
-                className="w-8"
-                placeholder="blur"
-                priority={true}
-                width={32}
-                height={32}
-              />
-              <span className="font-extrabold text-lg">{config.appName}</span>
-            </Link>
-            <button
-              type="button"
-              className="-m-2.5 rounded-md p-2.5"
-              onClick={() => setIsOpen(false)}
-            >
-              <span className="sr-only">Close menu</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
+        <div className="flex items-center space-x-4">
+          <MobileNav />
+
+          {session ? (
+            <Button onClick={handleSignOut} variant="outline">
+              Sign Out
+            </Button>
+          ) : (
+            <div className="hidden md:flex items-center space-x-4">
+              <Button variant="ghost" asChild>
+                <Link href="/auth/signin">Log in</Link>
+              </Button>
+              <Button
+                asChild
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Your links on small screens */}
-          <div className="flow-root mt-6">
-            <div className="py-4">
-              <div className="flex flex-col gap-y-4 items-start">
-                {links.map((link) => (
-                  <Link
-                    href={link.href}
-                    key={link.href}
-                    className="link link-hover"
-                    title={link.label}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
+                <Link href="/auth/signup">Sign Up</Link>
+              </Button>
             </div>
-            <div className="divider"></div>
-            {/* Your CTA on small screens */}
-            <div className="flex flex-col">{cta}</div>
-          </div>
+          )}
         </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}
