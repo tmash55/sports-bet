@@ -1,6 +1,4 @@
 import PropComparisonContainer from "@/components/props/PropComparisonContainer";
-import StatTypeSelection from "@/components/props/StatTypeSelect";
-import ClientWrapper from "@/components/ClientWrapper";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,25 +13,19 @@ export default function PropComparisonPage({
 }) {
   const formattedSport = params.sport.toUpperCase();
   const formattedStatType = params.statType
-    .split(/(?=[A-Z])/)
+    .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
   return (
-    <ClientWrapper>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">
-          {formattedSport} Prop Comparison
-        </h1>
-        <StatTypeSelection
-          sport={params.sport}
-          currentStatType={params.statType}
-        />
-        <PropComparisonContainer
-          sport={params.sport}
-          statType={params.statType}
-        />
-      </div>
-    </ClientWrapper>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">
+        {formattedSport} {formattedStatType} Prop Comparison
+      </h1>
+      <PropComparisonContainer
+        sport={params.sport}
+        statType={params.statType}
+      />
+    </div>
   );
 }

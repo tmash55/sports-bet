@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { BarChart2, Users, Trophy } from "lucide-react";
+"use client";
 
-type PropType = "player" | "team" | "game";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface PropTypeSelectionProps {
-  propType: PropType;
-  setPropType: (type: PropType) => void;
+  propType: "main" | "alternate";
+  setPropType: (propType: "main" | "alternate") => void;
 }
 
 export default function PropTypeSelection({
@@ -13,28 +13,19 @@ export default function PropTypeSelection({
   setPropType,
 }: PropTypeSelectionProps) {
   return (
-    <div className="flex space-x-2">
-      <Button
-        variant={propType === "player" ? "default" : "outline"}
-        onClick={() => setPropType("player")}
-      >
-        <BarChart2 className="mr-2 h-4 w-4" />
-        Player Props
-      </Button>
-      <Button
-        variant={propType === "team" ? "default" : "outline"}
-        onClick={() => setPropType("team")}
-      >
-        <Users className="mr-2 h-4 w-4" />
-        Team Props
-      </Button>
-      <Button
-        variant={propType === "game" ? "default" : "outline"}
-        onClick={() => setPropType("game")}
-      >
-        <Trophy className="mr-2 h-4 w-4" />
-        Game Props
-      </Button>
-    </div>
+    <RadioGroup
+      defaultValue={propType}
+      onValueChange={(value) => setPropType(value as "main" | "alternate")}
+      className="flex space-x-4"
+    >
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem value="main" id="main" />
+        <Label htmlFor="main">Main Props</Label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem value="alternate" id="alternate" />
+        <Label htmlFor="alternate">Alternate Props</Label>
+      </div>
+    </RadioGroup>
   );
 }

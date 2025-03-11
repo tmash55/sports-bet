@@ -13,6 +13,7 @@ import {
   BookOpen,
   Bell,
   Settings,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,19 +32,39 @@ export const features = [
     name: "Props",
     href: "/props",
     icon: BarChart2,
-    sports: ["NFL", "NBA", "MLB", "NHL"],
+    sports: [
+      { name: "NFL", path: "nfl/compare" },
+      { name: "NBA", path: "nba/points/compare" },
+      { name: "MLB", path: "mlb/compare" },
+      { name: "NHL", path: "nhl/compare" },
+    ],
   },
   {
     name: "Trends",
     href: "/trends",
     icon: TrendingUp,
-    sports: ["NFL", "NBA", "MLB", "NHL"],
+    sports: [
+      { name: "NFL", path: "nfl" },
+      { name: "NBA", path: "nba" },
+      { name: "MLB", path: "mlb" },
+      { name: "NHL", path: "nhl" },
+    ],
   },
   {
     name: "Projections",
     href: "/projections",
     icon: LineChart,
-    sports: ["NFL", "NBA", "MLB", "NHL"],
+    sports: [
+      { name: "NFL", path: "nfl" },
+      { name: "NBA", path: "nba" },
+      { name: "MLB", path: "mlb" },
+      { name: "NHL", path: "nhl" },
+    ],
+  },
+  {
+    name: "Parlay Builder",
+    href: "/parlay-builder",
+    icon: Layers,
   },
 ];
 
@@ -90,28 +111,38 @@ export default function Header() {
           <NavigationMenuList>
             {features.map((feature) => (
               <NavigationMenuItem key={feature.name} className="relative">
-                <NavigationMenuTrigger className="h-9">
-                  <feature.icon className="mr-2 h-4 w-4" />
-                  {feature.name}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[200px] gap-1 p-4">
-                    {feature.sports.map((sport) => (
-                      <li key={sport}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={`${
-                              feature.href
-                            }/${sport.toLowerCase()}/compare`}
-                            className="flex items-center space-x-2 rounded-md p-2 hover:bg-accent"
-                          >
-                            <span>{sport}</span>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
+                {feature.sports ? (
+                  <>
+                    <NavigationMenuTrigger className="h-9">
+                      <feature.icon className="mr-2 h-4 w-4" />
+                      {feature.name}
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[200px] gap-1 p-4">
+                        {feature.sports.map((sport) => (
+                          <li key={sport.name}>
+                            <NavigationMenuLink asChild>
+                              <Link
+                                href={`${feature.href}/${sport.path}`}
+                                className="flex items-center space-x-2 rounded-md p-2 hover:bg-accent"
+                              >
+                                <span>{sport.name}</span>
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  </>
+                ) : (
+                  <Link
+                    href={feature.href}
+                    className="flex items-center space-x-2 h-9 px-4 py-2"
+                  >
+                    <feature.icon className="h-4 w-4" />
+                    <span>{feature.name}</span>
+                  </Link>
+                )}
               </NavigationMenuItem>
             ))}
 
