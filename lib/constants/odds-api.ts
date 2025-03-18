@@ -21,6 +21,13 @@
     MONEYLINE: "h2h",
     SPREADS: "spreads",
     TOTALS: "totals",
+    ALTERNATE_SPREADS: "alternate_spreads",
+    ALTERNATE_TOTALS: "alternate_totals",
+    BTTS: "btts",
+    DRAW_NO_BET: "draw_no_bet",
+    H2H_3WAY: "h2h_3_way",
+    TEAM_TOTALS: "team_totals",
+    ALTERNATE_TEAM_TOTALS: "alternate_team_totals",
     // Add more game markets as needed
   } as const
   
@@ -30,15 +37,37 @@
   export const PLAYER_MARKETS = {
     [SPORTS.NBA]: {
       POINTS: "player_points",
+      POINTS_ALTERNATE: "player_points_alternate",
       REBOUNDS: "player_rebounds",
+      REBOUNDS_ALTERNATE: "player_rebounds_alternate",
       ASSISTS: "player_assists",
+      ASSISTS_ALTERNATE: "player_assists_alternate",
       THREES: "player_threes",
+      THREES_ALTERNATE: "player_threes_alternate",
       STEALS: "player_steals",
+      STEALS_ALTERNATE: "player_steals_alternate",
       BLOCKS: "player_blocks",
-      PRA: "player_points_rebounds_assists", // Points + Rebounds + Assists
-      PR: "player_points_rebounds", // Points + Rebounds
-      PA: "player_points_assists", // Points + Assists
-      RA: "player_rebounds_assists", // Rebounds + Assists
+      BLOCKS_ALTERNATE: "player_blocks_alternate",
+      PRA: "player_points_rebounds_assists",
+      PRA_ALTERNATE: "player_points_rebounds_assists_alternate",
+      PR: "player_points_rebounds",
+      PR_ALTERNATE: "player_points_rebounds_alternate",
+      PA: "player_points_assists",
+      PA_ALTERNATE: "player_points_assists_alternate",
+      RA: "player_rebounds_assists",
+      RA_ALTERNATE: "player_rebounds_assists_alternate",
+    },
+    [SPORTS.NCAAB]: {
+      POINTS: "player_points",
+      POINTS_ALTERNATE: "player_points_alternate",
+      REBOUNDS: "player_rebounds",
+      REBOUNDS_ALTERNATE: "player_rebounds_alternate",
+      ASSISTS: "player_assists",
+      ASSISTS_ALTERNATE: "player_assists_alternate",
+      THREES: "player_threes",
+      THREES_ALTERNATE: "player_threes_alternate",
+      PRA: "player_points_rebounds_assists",
+      PRA_ALTERNATE: "player_points_rebounds_assists_alternate",
     },
     [SPORTS.NFL]: {
       PASS_YARDS: "player_pass_yds",
@@ -71,12 +100,14 @@
   // Regions
   export const REGIONS = {
     US: "us",
+    US2: "us2",
     UK: "uk",
     EU: "eu",
     AU: "au",
   } as const
   
   export type RegionKey = (typeof REGIONS)[keyof typeof REGIONS]
+
   
   // Bookmakers
   export const BOOKMAKERS = {
@@ -85,6 +116,17 @@
     BETMGM: "betmgm",
     CAESARS: "caesars",
     POINTSBET: "pointsbet",
+    PINNACLE: "pinnacle",
+    BET365: "bet365",
+    BOVADA: "bovada",
+    BETONLINE: "betonline",
+    BETONLINEAG: "betonlineag",
+    BETUS: "betus",
+    LOWVIG: "lowvig",
+    FANATICS: "fanatics",
+    MYBOOKIEAG: "mybookieag",
+    WILLIAMHILL: "caesars",
+    BETRIVERS: "betrivers",
     // Add more bookmakers as needed
   } as const
   
@@ -130,48 +172,119 @@
       name: "Totals",
       description: "Bet on the total combined score",
     },
+    [GAME_MARKETS.ALTERNATE_SPREADS]: {
+      name: "Alternate Spreads",
+      description: "All available point spread outcomes for each team",
+    },
+    [GAME_MARKETS.ALTERNATE_TOTALS]: {
+      name: "Alternate Totals",
+      description: "All available over/under outcomes",
+    },
+    [GAME_MARKETS.BTTS]: {
+      name: "Both Teams to Score",
+      description: 'Odds that both teams will score during the game. Outcomes are "Yes" or "No". Available for soccer.',
+    },
+    [GAME_MARKETS.DRAW_NO_BET]: {
+      name: "Draw No Bet",
+      description:
+        "Odds for the match winner, excluding the draw outcome. A draw will result in a returned bet. Available for soccer.",
+    },
+    [GAME_MARKETS.H2H_3WAY]: {
+      name: "Head to head / Moneyline 3 way",
+      description: "Match winner including draw",
+    },
+    [GAME_MARKETS.TEAM_TOTALS]: {
+      name: "Team Totals",
+      description: "Featured team totals (Over/Under)",
+    },
+    [GAME_MARKETS.ALTERNATE_TEAM_TOTALS]: {
+      name: "Alternate Team Totals",
+      description: "All available team totals (Over/Under)",
+    },
   
     // NBA player markets
     [PLAYER_MARKETS[SPORTS.NBA].POINTS]: {
       name: "Points",
       description: "Bet on how many points a player will score",
     },
+    [PLAYER_MARKETS[SPORTS.NBA].POINTS_ALTERNATE]: {
+      name: "Alternate Points",
+      description: "Bet on alternate point lines for a player",
+    },
     [PLAYER_MARKETS[SPORTS.NBA].REBOUNDS]: {
       name: "Rebounds",
       description: "Bet on how many rebounds a player will grab",
+    },
+    [PLAYER_MARKETS[SPORTS.NBA].REBOUNDS_ALTERNATE]: {
+      name: "Alternate Rebounds",
+      description: "Bet on alternate rebound lines for a player",
     },
     [PLAYER_MARKETS[SPORTS.NBA].ASSISTS]: {
       name: "Assists",
       description: "Bet on how many assists a player will dish out",
     },
+    [PLAYER_MARKETS[SPORTS.NBA].ASSISTS_ALTERNATE]: {
+      name: "Alternate Assists",
+      description: "Bet on alternate assist lines for a player",
+    },
     [PLAYER_MARKETS[SPORTS.NBA].THREES]: {
       name: "3-Pointers",
       description: "Bet on how many three-pointers a player will make",
+    },
+    [PLAYER_MARKETS[SPORTS.NBA].THREES_ALTERNATE]: {
+      name: "Alternate 3-Pointers",
+      description: "Bet on alternate three-pointer lines for a player",
     },
     [PLAYER_MARKETS[SPORTS.NBA].STEALS]: {
       name: "Steals",
       description: "Bet on how many steals a player will get",
     },
+    [PLAYER_MARKETS[SPORTS.NBA].STEALS_ALTERNATE]: {
+      name: "Alternate Steals",
+      description: "Bet on alternate steal lines for a player",
+    },
     [PLAYER_MARKETS[SPORTS.NBA].BLOCKS]: {
       name: "Blocks",
       description: "Bet on how many blocks a player will get",
+    },
+    [PLAYER_MARKETS[SPORTS.NBA].BLOCKS_ALTERNATE]: {
+      name: "Alternate Blocks",
+      description: "Bet on alternate block lines for a player",
     },
     [PLAYER_MARKETS[SPORTS.NBA].PRA]: {
       name: "PRA",
       description: "Bet on combined points, rebounds, and assists",
     },
+    [PLAYER_MARKETS[SPORTS.NBA].PRA_ALTERNATE]: {
+      name: "Alternate PRA",
+      description: "Bet on alternate combined points, rebounds, and assists lines",
+    },
     [PLAYER_MARKETS[SPORTS.NBA].PR]: {
       name: "PR",
       description: "Bet on combined points and rebounds",
+    },
+    [PLAYER_MARKETS[SPORTS.NBA].PR_ALTERNATE]: {
+      name: "Alternate PR",
+      description: "Bet on alternate combined points and rebounds lines",
     },
     [PLAYER_MARKETS[SPORTS.NBA].PA]: {
       name: "PA",
       description: "Bet on combined points and assists",
     },
+    [PLAYER_MARKETS[SPORTS.NBA].PA_ALTERNATE]: {
+      name: "Alternate PA",
+      description: "Bet on alternate combined points and assists lines",
+    },
     [PLAYER_MARKETS[SPORTS.NBA].RA]: {
       name: "RA",
       description: "Bet on combined rebounds and assists",
     },
+    [PLAYER_MARKETS[SPORTS.NBA].RA_ALTERNATE]: {
+      name: "Alternate RA",
+      description: "Bet on alternate combined rebounds and assists lines",
+    },
+  
+
   
     // NFL player markets
     [PLAYER_MARKETS[SPORTS.NFL].PASS_YARDS]: {

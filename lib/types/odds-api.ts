@@ -9,6 +9,7 @@
    success: boolean
    data: T
    errors?: string[]
+   source?: "cache" | "api" // Add this line
  }
  
  // Event type
@@ -40,6 +41,7 @@
    key: string
    last_update: string
    outcomes: PlayerProp[] | Outcome[]
+   isAlternate?: boolean // Add this property
  }
  
  // Standard outcome type (for game markets)
@@ -55,6 +57,7 @@
    title: string
    last_update: string
    markets: Market[]
+   region?: RegionKey
  }
  
  // Game odds type

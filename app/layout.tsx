@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { UserPreferencesProvider } from "@/lib/contexts/user-preferences-context";
 
 const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <head></head>
       <body className={font.className}>
-        <QueryClientProvider client={queryClient}>
+      <UserPreferencesProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -45,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
             <Toaster />
           </ThemeProvider>
-        </QueryClientProvider>
+          </UserPreferencesProvider>
       </body>
     </html>
   );

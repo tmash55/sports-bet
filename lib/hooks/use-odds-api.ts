@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { type SportKey, SPORTS, PLAYER_MARKETS, SPORT_INFO, MARKET_INFO } from "../constants/odds-api"
 import type { Event, PlayerProps } from "../types/odds-api"
 
@@ -31,24 +31,25 @@ export function useSports() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchSports = async () => {
-      setLoading(true)
-      const { data, error } = await fetchApi<any[]>("/api/sports")
+  const fetchSports = useCallback(async () => {
+    setLoading(true)
+    const { data, error } = await fetchApi<any[]>("/api/sports")
 
-      if (error) {
-        setError(error)
-      } else {
-        setSports(data || [])
-      }
-
-      setLoading(false)
+    if (error) {
+      setError(error)
+    } else {
+      setSports(data || [])
     }
 
-    fetchSports()
+    setLoading(false)
+    return { data, error }
   }, [])
 
-  return { sports, loading, error }
+  useEffect(() => {
+    fetchSports()
+  }, [fetchSports])
+
+  return { sports, loading, error, refetch: fetchSports }
 }
 
 // Hook for fetching events
@@ -57,24 +58,25 @@ export function useEvents(sportKey: SportKey) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true)
-      const { data, error } = await fetchApi<Event[]>(`/api/events?sport=${sportKey}`)
+  const fetchEvents = useCallback(async () => {
+    setLoading(true)
+    const { data, error } = await fetchApi<Event[]>(`/api/events?sport=${sportKey}`)
 
-      if (error) {
-        setError(error)
-      } else {
-        setEvents(data || [])
-      }
-
-      setLoading(false)
+    if (error) {
+      setError(error)
+    } else {
+      setEvents(data || [])
     }
 
-    fetchEvents()
+    setLoading(false)
+    return { data, error }
   }, [sportKey])
 
-  return { events, loading, error }
+  useEffect(() => {
+    fetchEvents()
+  }, [fetchEvents])
+
+  return { events, loading, error, refetch: fetchEvents }
 }
 
 // Update the usePlayerProps hook to include oddsFormat
@@ -82,29 +84,34 @@ export function usePlayerProps(sportKey: SportKey, eventId: string | null, marke
   const [propData, setPropData] = useState<PlayerProps | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [source, setSource] = useState<"cache" | "api" | null>(null)
 
-  useEffect(() => {
-    if (!eventId) return
+  const fetchPlayerProps = useCallback(async () => {
+    if (!eventId) return { data: null, error: "No event ID provided" }
 
-    const fetchPlayerProps = async () => {
-      setLoading(true)
-      const { data, error } = await fetchApi<PlayerProps>(
-        `/api/player-props?sport=${sportKey}&eventId=${eventId}&markets=${markets.join(",")}&oddsFormat=american`,
-      )
+    setLoading(true)
+    const { data, error } = await fetchApi<any>(
+      `/api/player-props?sport=${sportKey}&eventId=${eventId}&markets=${markets.join(",")}&oddsFormat=american`,
+    )
 
-      if (error) {
-        setError(error)
-      } else {
-        setPropData(data)
-      }
-
-      setLoading(false)
+    if (error) {
+      setError(error)
+    } else {
+      setPropData(data.data)
+      setSource(data.source || "api")
     }
 
-    fetchPlayerProps()
-  }, [sportKey, eventId, markets.join(",")])
+    setLoading(false)
+    return { data: data?.data, error, source: data?.source }
+  }, [sportKey, eventId, markets])
 
-  return { propData, loading, error }
+  useEffect(() => {
+    if (eventId) {
+      fetchPlayerProps()
+    }
+  }, [fetchPlayerProps, eventId])
+
+  return { propData, loading, error, source, refetch: fetchPlayerProps }
 }
 
 // Helper function to get available markets for a sport
